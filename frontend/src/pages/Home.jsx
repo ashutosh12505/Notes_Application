@@ -2,7 +2,6 @@ import { useState, useEffect } from "react"
 import api from "../api"
 import Note from "../components/Note";
 import { useNavigate } from "react-router-dom";
-// import "../styles/Home.css"
 
 function Home(){
 
