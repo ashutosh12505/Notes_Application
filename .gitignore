@@ -1,0 +1,19 @@
+# Ignore Python environment
+env/
+
+# Django
+*.pyc
+__pycache__/
+
+# Node modules
+frontend/node_modules/
+
+# Vite cache
+frontend/.vite/
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
