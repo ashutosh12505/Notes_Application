@@ -32,23 +32,48 @@ function Form({route, method}){
         } catch (error) {
             // Handle different types of errors
             console.error('API Error:', error); // Log for debugging
+            console.error('Error Response Data:', error.response?.data); // Log response data
             
             if (error.response) {
                 // Server responded with error status
+                const errorData = error.response.data;
+                
                 if (error.response.status === 401) {
                     setError("Invalid username or password. Please try again.")
                 } else if (error.response.status === 400) {
                     // Handle validation errors from backend
-                    const errorData = error.response.data;
+                    let errorMessage = "Invalid input. Please check your credentials.";
+                    
+                    // Check for specific field errors
                     if (errorData.username) {
-                        setError(errorData.username[0] || "Username error")
+                        const usernameError = Array.isArray(errorData.username) 
+                            ? errorData.username[0] 
+                            : errorData.username;
+                        errorMessage = `Username: ${usernameError}`;
                     } else if (errorData.password) {
-                        setError(errorData.password[0] || "Password error")
+                        const passwordError = Array.isArray(errorData.password) 
+                            ? errorData.password[0] 
+                            : errorData.password;
+                        errorMessage = `Password: ${passwordError}`;
                     } else if (errorData.non_field_errors) {
-                        setError(errorData.non_field_errors[0] || "Invalid credentials")
-                    } else {
-                        setError("Invalid input. Please check your credentials.")
+                        const nonFieldError = Array.isArray(errorData.non_field_errors) 
+                            ? errorData.non_field_errors[0] 
+                            : errorData.non_field_errors;
+                        errorMessage = nonFieldError;
+                    } else if (typeof errorData === 'string') {
+                        // If error is a simple string
+                        errorMessage = errorData;
+                    } else if (errorData && typeof errorData === 'object') {
+                        // Try to extract any error message
+                        const errorKeys = Object.keys(errorData);
+                        if (errorKeys.length > 0) {
+                            const firstKey = errorKeys[0];
+                            const firstError = errorData[firstKey];
+                            errorMessage = `${firstKey}: ${Array.isArray(firstError) ? firstError[0] : firstError}`;
+                        }
                     }
+                    
+                    setError(errorMessage);
                 } else {
                     setError(`Error: ${error.response.status} - ${error.response.statusText}`)
                 }
