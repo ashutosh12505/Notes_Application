@@ -31,4 +31,22 @@ api.interceptors.request.use(
     }
 )
 
+// Add response interceptor for better error logging
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        // Log detailed error information
+        if (error.request && !error.response) {
+            console.error('Network Error Details:', {
+                url: error.config?.url,
+                baseURL: error.config?.baseURL,
+                method: error.config?.method,
+                message: error.message,
+                code: error.code
+            })
+        }
+        return Promise.reject(error)
+    }
+)
+
 export default api

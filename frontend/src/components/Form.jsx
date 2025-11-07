@@ -31,6 +31,8 @@ function Form({route, method}){
             }
         } catch (error) {
             // Handle different types of errors
+            console.error('API Error:', error); // Log for debugging
+            
             if (error.response) {
                 // Server responded with error status
                 if (error.response.status === 401) {
@@ -52,10 +54,24 @@ function Form({route, method}){
                 }
             } else if (error.request) {
                 // Request was made but no response received
-                setError("Network error. Please check if the server is running.")
+                // Check if it's a timeout or connection issue
+                if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
+                    setError("Request timed out. The server might be starting up (free tier can take 30-60 seconds). Please try again.")
+                } else if (error.message && error.message.includes('CORS')) {
+                    setError("CORS error: Backend is blocking requests. Check CORS settings.")
+                } else {
+                    setError("Network error: Cannot reach server. Check if backend is running and CORS is configured.")
+                }
+            } else if (error.message) {
+                // Axios error with message
+                if (error.message.includes('Network Error') || error.message.includes('Failed to fetch')) {
+                    setError("Cannot connect to server. Check backend URL and CORS settings.")
+                } else {
+                    setError(`Error: ${error.message}`)
+                }
             } else {
                 // Something else happened
-                setError("An unexpected error occurred. Please try again.")
+                setError("An unexpected error occurred. Please check browser console for details.")
             }
         } finally{
             setLoading(false)
