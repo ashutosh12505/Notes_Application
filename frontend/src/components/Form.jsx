@@ -9,12 +9,14 @@ function Form({route, method}){
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [loading, setLoading] = useState(false)
+    const [error, setError] = useState("")
 
     const navigate = useNavigate();
     const pageName = method==="login" ? "Login" : "Register"
 
     const handleSubmit = async (e) =>{
         setLoading(true);
+        setError(""); // Clear previous errors
         e.preventDefault();
 
         try {
@@ -28,7 +30,33 @@ function Form({route, method}){
                 navigate("/login")
             }
         } catch (error) {
-            alert(error)
+            // Handle different types of errors
+            if (error.response) {
+                // Server responded with error status
+                if (error.response.status === 401) {
+                    setError("Invalid username or password. Please try again.")
+                } else if (error.response.status === 400) {
+                    // Handle validation errors from backend
+                    const errorData = error.response.data;
+                    if (errorData.username) {
+                        setError(errorData.username[0] || "Username error")
+                    } else if (errorData.password) {
+                        setError(errorData.password[0] || "Password error")
+                    } else if (errorData.non_field_errors) {
+                        setError(errorData.non_field_errors[0] || "Invalid credentials")
+                    } else {
+                        setError("Invalid input. Please check your credentials.")
+                    }
+                } else {
+                    setError(`Error: ${error.response.status} - ${error.response.statusText}`)
+                }
+            } else if (error.request) {
+                // Request was made but no response received
+                setError("Network error. Please check if the server is running.")
+            } else {
+                // Something else happened
+                setError("An unexpected error occurred. Please try again.")
+            }
         } finally{
             setLoading(false)
         }
@@ -51,6 +79,15 @@ function Form({route, method}){
             placeholder="Password"
         />
         {loading && <LoadingIndicator/>}
+        {error && <div className="error-message" style={{ 
+            color: 'red', 
+            marginTop: '1em', 
+            marginBottom: '1em',
+            padding: '0.5em',
+            backgroundColor: '#ffebee',
+            borderRadius: '4px',
+            border: '1px solid #f44336'
+        }}>{error}</div>}
         <button className="form-button" type="submit">
             {pageName}
         </button>

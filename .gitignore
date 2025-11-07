@@ -1,17 +1,35 @@
 env/
 
-
 *.pyc
 __pycache__/
 
-
 frontend/node_modules/
-
-
 frontend/.vite/
 
-
 .vscode/
-
 .DS_Store
+
 Thumbs.db
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# Database
+db.sqlite3
+*.db
+
+# Static files (generated)
+backend/staticfiles/
+
+# Build outputs
+frontend/dist/
+frontend/build/
+
+DEPLOYMENT_STEPS.md
+HOSTING_GUIDE.md
+INTERVIEW_QUICK_REFERENCE.md
+PROJECT_OVERVIEW.md
+QUICK_DEPLOYMENT_SUMMARY.md
+StepsToRun.txt
