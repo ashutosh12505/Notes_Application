@@ -159,11 +159,13 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CORS Configuration
-# In production, set CORS_ALLOWED_ORIGINS to your frontend URL
-CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', '').split(',') if os.getenv('CORS_ALLOWED_ORIGINS') else []
-# If CORS_ALLOWED_ORIGINS is set, use it; otherwise allow all origins (for development)
-if CORS_ALLOWED_ORIGINS and CORS_ALLOWED_ORIGINS != ['']:
+# In production, set CORS_ALLOWED_ORIGINS to your frontend URL (without trailing slash)
+cors_origins = os.getenv('CORS_ALLOWED_ORIGINS', '')
+if cors_origins:
+    # Remove trailing slashes and split by comma
+    CORS_ALLOWED_ORIGINS = [origin.rstrip('/') for origin in cors_origins.split(',') if origin.strip()]
     CORS_ALLOW_ALL_ORIGINS = False
 else:
+    CORS_ALLOWED_ORIGINS = []
     CORS_ALLOW_ALL_ORIGINS = os.getenv('CORS_ALLOW_ALL_ORIGINS', 'True') == 'True'
 CORS_ALLOWS_CREDENTIALS = True

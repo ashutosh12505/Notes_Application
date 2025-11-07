@@ -1,8 +1,20 @@
 import axios from "axios"
 import { ACCESS_TOKEN } from "./constants"
 
+// Get API URL from environment variable (set at build time)
+const API_URL = import.meta.env.VITE_API_URL
+
+// Log for debugging (remove in production)
+if (!API_URL) {
+    console.error("VITE_API_URL is not set! API calls will fail.")
+}
+
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL
+    baseURL: API_URL,
+    timeout: 60000, // 60 seconds timeout for Render free tier cold starts
+    headers: {
+        'Content-Type': 'application/json',
+    }
 })
 
 api.interceptors.request.use(
