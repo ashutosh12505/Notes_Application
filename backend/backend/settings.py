@@ -31,7 +31,33 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-39&d*l4oh(2h9jq5*$w*7%1z1w
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
+allowed_hosts_env = os.getenv('ALLOWED_HOSTS', '')
+ALLOWED_HOSTS = []
+
+if allowed_hosts_env:
+    for host in allowed_hosts_env.split(','):
+        cleaned_host = host.strip().replace('https://', '').replace('http://', '').rstrip('/')
+        if cleaned_host and cleaned_host not in ALLOWED_HOSTS:
+            ALLOWED_HOSTS.append(cleaned_host)
+
+if not ALLOWED_HOSTS:
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+
+render_external_host = os.getenv('RENDER_EXTERNAL_HOSTNAME')
+if render_external_host and render_external_host not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(render_external_host)
+
+# CSRF trusted origins
+csrf_trusted_env = os.getenv('CSRF_TRUSTED_ORIGINS', '')
+if csrf_trusted_env:
+    CSRF_TRUSTED_ORIGINS = [origin.strip().rstrip('/') for origin in csrf_trusted_env.split(',') if origin.strip()]
+else:
+    CSRF_TRUSTED_ORIGINS = []
+
+if render_external_host:
+    csrf_origin = f"https://{render_external_host}"
+    if csrf_origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(csrf_origin)
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
