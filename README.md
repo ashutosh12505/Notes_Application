@@ -1,12 +1,5 @@
 # 📝 Notes Application
 
-A full-stack **notes management system** built with **Django (REST API)** and **React (SPA frontend)**.  
-It provides **secure user authentication**, **JWT-based access control**, and a clean, responsive UI for managing personal notes.
-
----
-
-## 🚀 Live Demo
-
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Visit%20Now-00C7B7?style=for-the-badge&logo=render&logoColor=white)](https://notes-frontend-x8b0.onrender.com/login)
 
 <p align="left">
